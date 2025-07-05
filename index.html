@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cerita Cinta Kita - Dokumentasi Perjalanan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            color: rgba(255, 182, 193, 0.4);
+            font-size: 20px;
+            animation: floatUp 8s infinite linear;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e, #ffa8a8, #ff6b6b);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            color: #fff;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .firebase-status {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+
+        .firebase-status.connected {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .firebase-status.disconnected {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .firebase-status.loading {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: bold;
+            color: #d63384;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: #d63384;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(214, 51, 132, 0.3);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            margin: 40px 0;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .section.hidden {
+            display: none;
+        }
+
+        .section h2 {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            color: #d63384;
+            text-align: center;
+            position: relative;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            border-radius: 2px;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 25px;
+            font-family: inherit;
+            font-size: 1em;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #d63384;
+            box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover, .control-btn.active {
+            background: #d63384;
+            color: white;
+            border-color: #d63384;
+        }
+
+        .story-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #ff6b6b;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeIn 0.6s ease forwards;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .story-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .story-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .story-card:hover .story-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background: #ffc107;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .story-date {
+            font-size: 0.9em;
+            color: #d63384;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .story-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .story-content {
+            font-size: 1em;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .story-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            font-size: 0.8em;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #ff6b6b, #ff8e8e);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 40px;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: timelineSlide 0.6s ease forwards;
+        }
+
+        @keyframes timelineSlide {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .timeline-item::before {
+            content: '💕';
+            position: absolute;
+            left: -10px;
+            top: 0;
+            background: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-date {
+            font-weight: bold;
+            color: #d63384;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .photo-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .photo-placeholder {
+            height: 200px;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 1.1em;
+            border: 2px dashed #dee2e6;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .photo-upload-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .photo-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .photo-info {
+            padding: 15px;
+        }
+
+        .photo-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .photo-date {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #d63384;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .quote-section {
+            text-align: center;
+            font-style: italic;
+            position: relative;
+            padding: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border-radius: 20px;
+            margin: 40px 0;
+        }
+
+        .quote-section::before {
+            content: '"';
+            font-size: 4em;
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            opacity: 0.3;
+        }
+
+        .quote-section::after {
+            content: '"';
+            font-size: 4em;
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            opacity: 0.3;
+        }
+
+        .quote-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .add-story-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #d63384;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(214, 51, 132, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .add-story-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(214, 51, 132, 0.6);
+        }
+
+        .data-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .data-btn {
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .data-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            color: #d63384;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1em;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #d63384;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .footer p {
+            color: #fff;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .love-counter {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-top: 20px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 3000;
+            animation: slideIn 0.3s ease;
+            color: white;
+        }
+
+        .notification.success {
+            background: #28a745;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #d63384;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .section {
+                margin: 20px 0;
+                padding: 25px;
+            }
+            
+            .section h2 {
+                font-size: 1.8em;
+            }
+            
+            .navigation {
+                gap: 10px;
+            }
+            
+            .nav-btn {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
+            
+            .story-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .add-story-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .controls {
+                gap: 10px;
+            }
+
+            .control-btn {
+                padding: 8px 15px;
+                font-size: 0.8em;
+            }
+
+            .data-controls {
+                gap: 10px;
+            }
+
+            .data-btn {
+                padding: 8px 15px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-hearts" id="floatingHearts"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>Cerita Cinta Kita</h1>
+            <p class="subtitle">Dokumentasi Perjalanan Indah Dua Hati yang Bersatu</p>
+            <div class="firebase-status loading" id="firebaseStatus">
+                <span class="loading-spinner"></span> Menghubungkan ke Firebase...
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn active" onclick="showSection('beranda')">🏠 Beranda</button>
+            <button class="nav-btn" onclick="showSection('cerita')">📖 Cerita Kita</button>
+            <button class="nav-btn" onclick="showSection('timeline')">📅 Timeline</button>
+            <button class="nav-btn" onclick="showSection('galeri')">📸 Galeri</button>
+            <button class="nav-btn" onclick="showSection('statistik')">📊 Statistik</button>
+        </div>
+
+        <!-- Beranda Section -->
+        <div id="beranda" class="section">
+            <h2>Selamat Datang di Cerita Cinta Kita</h2>
+            <p style="text-align: center; font-size: 1.1em; margin-bottom: 30px; line-height: 1.6;">
+                Website ini adalah dokumentasi perjalanan cinta kita, tempat dimana setiap momen berharga terabadikan. 
+                Dari pertemuan pertama hingga setiap hari yang kita lalui bersama, semua tertulis di sini.
+            </p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="daysTogether">0</div>
+                    <div class="stat-label">Hari Bersama</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalStories">0</div>
+                    <div class="stat-label">Cerita Tersimpan</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPhotos">0</div>
+                    <div class="stat-label">Foto Kenangan</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalMonthsTogether">0</div>
+                    <div class="stat-label">Bulan Bersama</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cerita Section -->
+        <div id="cerita" class="section hidden">
+            <h2>Cerita-Cerita Kita</h2>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="🔍 Cari cerita berdasarkan judul atau isi...">
+            </div>
+
+            <div class="controls">
+                <button class="control-btn active" onclick="filterStories('semua')">Semua</button>
+                <button class="control-btn" onclick="filterStories('romantis')">💕 Romantis</button>
+                <button class="control-btn" onclick="filterStories('lucu')">😄 Lucu</button>
+                <button class="control-btn" onclick="filterStories('kencan')">🌹 Kencan</button>
+                <button class="control-btn" onclick="filterStories('spesial')">⭐ Spesial</button>
+            </div>
+            
+            <div class="controls">
+                <button class="control-btn active" onclick="sortStories('terbaru')">📅 Terbaru</button>
+                <button class="control-btn" onclick="sortStories('terlama')">📅 Terlama</button>
+                <button class="control-btn" onclick="sortStories('judul')">🔤 A-Z</button>
+                <button class="control-btn" onclick="sortStories('terpanjang')">📝 Terpanjang</button>
+            </div>
+
+            <div class="data-controls">
+                <button class="data-btn" onclick="exportStories()">📤 Export Data</button>
+                <button class="data-btn" onclick="document.getElementById('importFile').click()">📥 Import Data</button>
+                <button class="data-btn" onclick="clearAllData()">🗑️ Hapus Semua</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importStories(this.files[0])">
+            </div>
+            
+            <div class="story-grid" id="storyGrid">
+                <!-- Stories will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Timeline Section -->
+        <div id="timeline" class="section hidden">
+            <h2>Timeline Perjalanan Cinta</h2>
+            <div class="timeline" id="timelineContent">
+                <!-- Timeline will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Galeri Section -->
+        <div id="galeri" class="section hidden">
+            <h2>Galeri Kenangan</h2>
+            <p style="text-align: center; margin-bottom: 30px;">Foto-foto indah perjalanan cinta kita...</p>
+            <div class="photo-gallery" id="photoGallery">
+                <!-- Photos will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Statistik Section -->
+        <div id="statistik" class="section hidden">
+            <h2>Statistik Cinta Kita</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalDays">0</div>
+                    <div class="stat-label">Total Hari</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalWeeks">0</div>
+                    <div class="stat-label">Total Minggu</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalMonths">0</div>
+                    <div class="stat-label">Total Bulan</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="romanticStories">0</div>
+                    <div class="stat-label">Cerita Romantis</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="funnyStories">0</div>
+                    <div class="stat-label">Cerita Lucu</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="dateStories">0</div>
+                    <div class="stat-label">Cerita Kencan</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quote-section">
+            <div class="quote-text">
+                "Cinta sejati bukan tentang menemukan seseorang yang sempurna, 
+                tetapi tentang menemukan seseorang yang sempurna untukmu."
+            </div>
+            <div class="quote-author">- Untuk Kekasih Tercinta ❤️</div>
+        </div>
+
+        <div class="footer">
+            <p>Dibuat dengan sepenuh hati untuk</p>
+            <p><strong>Pasangan Tercinta</strong></p>
+            <div class="love-counter">
+                ❤️ Kita sudah bersama selama <span id="daysCounter">0</span> hari
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Story Button -->
+    <button class="add-story-btn" onclick="openModal()" title="Tambah Cerita Baru">+</button>
+
+    <!-- Modal for Adding/Editing Story -->
+    <div class="modal" id="addStoryModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Tambah Cerita Baru</h3>
+            <form id="storyForm">
+                <div class="form-group">
+                    <label for="storyTitle">Judul Cerita:</label>
+                    <input type="text" id="storyTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="storyDate">Tanggal:</label>
+                    <input type="date" id="storyDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="storyCategory">Kategori:</label>
+                    <select id="storyCategory" required>
+                        <option value="romantis">💕 Romantis</option>
+                        <option value="lucu">😄 Lucu</option>
+                        <option value="kencan">🌹 Kencan</option>
+                        <option value="spesial">⭐ Spesial</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="storyContent">Cerita:</label>
+                    <textarea id="storyContent" required placeholder="Ceritakan momen indah kalian..."></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Simpan</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+
+        // Firebase configuration - GANTI DENGAN KONFIGURASI ANDA
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        let app, db, storage;
+        let isFirebaseConnected = false;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            storage = getStorage(app);
+            isFirebaseConnected = true;
+            updateFirebaseStatus('connected', '✅ Terhubung ke Firebase');
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            updateFirebaseStatus('disconnected', '❌ Gagal terhubung ke Firebase - menggunakan penyimpanan lokal');
+            isFirebaseConnected = false;
+        }
+
+        // Make Firebase functions available globally
+        window.db = db;
+        window.storage = storage;
+        window.isFirebaseConnected = isFirebaseConnected;
+        window.addDoc = addDoc;
+        window.collection = collection;
+        window.getDocs = getDocs;
+        window.doc = doc;
+        window.updateDoc = updateDoc;
+        window.deleteDoc = deleteDoc;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.onSnapshot = onSnapshot;
+        window.ref = ref;
+        window.uploadBytes = uploadBytes;
+        window.getDownloadURL = getDownloadURL;
+
+        // Initialize the app after Firebase is ready
+        window.initializeApp();
+    </script>
+
+    <script>
+        // Global variables
+        let stories = [];
+        let photos = [];
+        const startDate = new Date('2024-09-22');
+        let currentFilter = 'semua';
+        let currentSort = 'terbaru';
+        let editingStoryId = null;
+
+        // Firebase status update
+        function updateFirebaseStatus(status, message) {
+            const statusElement = document.getElementById('firebaseStatus');
+            statusElement.className = `firebase-status ${status}`;
+            statusElement.innerHTML = message;
+        }
+
+        // Initialize app
+        function initializeApp() {
+            if (window.isFirebaseConnected) {
+                loadStoriesFromFirebase();
+                loadPhotosFromFirebase();
+                setupRealtimeListeners();
+            } else {
+                loadStoriesFromLocal();
+                loadPhotosFromLocal();
+            }
+            
+            updateCounters();
+            loadStories();
+            createFloatingHearts();
+            
+            // Set default date to today for new stories
+            document.getElementById('storyDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        // Firebase functions
+        async function loadStoriesFromFirebase() {
+            if (!window.isFirebaseConnected) return;
+            
+            try {
+                const querySnapshot = await window.getDocs(window.collection(window.db, 'stories'));
+                stories = [];
+                querySnapshot.forEach((doc) => {
+                    stories.push({ id: doc.id, ...doc.data() });
+                });
+                console.log('Stories loaded from Firebase:', stories.length);
+            } catch (error) {
+                console.error('Error loading stories from Firebase:', error);
+                showNotification('Error loading stories from Firebase', 'error');
+                loadStoriesFromLocal(); // Fallback to local storage
+            }
+        }
+
+        async function loadPhotosFromFirebase() {
+            if (!window.isFirebaseConnected) return;
+            
+            try {
+                const querySnapshot = await window.getDocs(window.collection(window.db, 'photos'));
+                photos = [];
+                querySnapshot.forEach((doc) => {
+                    photos.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // If no photos in Firebase, create default ones
+                if (photos.length === 0) {
+                    photos = getDefaultPhotos();
+                    // Save default photos to Firebase
+                    for (const photo of photos) {
+                        await savePhotoToFirebase(photo);
+                    }
+                }
+                console.log('Photos loaded from Firebase:', photos.length);
+            } catch (error) {
+                console.error('Error loading photos from Firebase:', error);
+                loadPhotosFromLocal(); // Fallback to local storage
+            }
+        }
+
+        async function saveStoryToFirebase(story) {
+            if (!window.isFirebaseConnected) return null;
+            
+            try {
+                const docRef = await window.addDoc(window.collection(window.db, 'stories'), {
+                    title: story.title,
+                    date: story.date,
+                    category: story.category,
+                    content: story.content,
+                    createdAt: new Date()
+                });
+                return docRef.id;
+            } catch (error) {
+                console.error('Error saving story to Firebase:', error);
+                showNotification('Error saving to Firebase', 'error');
+                return null;
+            }
+        }
+
+        async function updateStoryInFirebase(storyId, story) {
+            if (!window.isFirebaseConnected) return false;
+            
+            try {
+                await window.updateDoc(window.doc(window.db, 'stories', storyId), {
+                    title: story.title,
+                    date: story.date,
+                    category: story.category,
+                    content: story.content,
+                    updatedAt: new Date()
+                });
+                return true;
+            } catch (error) {
+                console.error('Error updating story in Firebase:', error);
+                showNotification('Error updating in Firebase', 'error');
+                return false;
+            }
+        }
+
+        async function deleteStoryFromFirebase(storyId) {
+            if (!window.isFirebaseConnected) return false;
+            
+            try {
+                await window.deleteDoc(window.doc(window.db, 'stories', storyId));
+                return true;
+            } catch (error) {
+                console.error('Error deleting story from Firebase:', error);
+                showNotification('Error deleting from Firebase', 'error');
+                return false;
+            }
+        }
+
+        async function savePhotoToFirebase(photo) {
+            if (!window.isFirebaseConnected) return null;
+            
+            try {
+                const docRef = await window.addDoc(window.collection(window.db, 'photos'), photo);
+                return docRef.id;
+            } catch (error) {
+                console.error('Error saving photo to Firebase:', error);
+                return null;
+            }
+        }
+
+        function setupRealtimeListeners() {
+            if (!window.isFirebaseConnected) return;
+            
+            // Listen for stories changes
+            window.onSnapshot(window.collection(window.db, 'stories'), (snapshot) => {
+                stories = [];
+                snapshot.forEach((doc) => {
+                    stories.push({ id: doc.id, ...doc.data() });
+                });
+                loadStories();
+                updateCounters();
+            });
+
+            // Listen for photos changes
+            window.onSnapshot(window.collection(window.db, 'photos'), (snapshot) => {
+                photos = [];
+                snapshot.forEach((doc) => {
+                    photos.push({ id: doc.id, ...doc.data() });
+                });
+                loadPhotos();
+                updateCounters();
+            });
+        }
+
+        // Local storage functions (fallback)
+        function loadStoriesFromLocal() {
+            const savedStories = localStorage.getItem('loveStories');
+            if (savedStories) {
+                stories = JSON.parse(savedStories);
+            } else {
+                stories = getDefaultStories();
+                saveToLocal();
+            }
+        }
+
+        function loadPhotosFromLocal() {
+            const savedPhotos = localStorage.getItem('lovePhotos');
+            if (savedPhotos) {
+                photos = JSON.parse(savedPhotos);
+            } else {
+                photos = getDefaultPhotos();
+                saveToLocal();
+            }
+        }
+
+        function saveToLocal() {
+            localStorage.setItem('loveStories', JSON.stringify(stories));
+            localStorage.setItem('lovePhotos', JSON.stringify(photos));
+        }
+
+        function getDefaultStories() {
+            return [
+                {
+                    id: '1',
+                    title: "Pertemuan Pertama",
+                    date: "2024-09-15",
+                    category: "spesial",
+                    content: "Hari dimana takdir mempertemukan kita. Saat pertama melihatmu, hatiku berdebar tak karuan. Seakan waktu terhenti dan dunia hanya milik kita berdua."
+                },
+                {
+                    id: '2',
+                    title: "Kencan Pertama",
+                    date: "2024-09-20",
+                    category: "kencan",
+                    content: "Kencan pertama kita di kafe kecil yang nyaman. Gugup, bahagia, dan penuh harapan. Pembicaraan mengalir lancar seakan kita sudah kenal lama."
+                },
+                {
+                    id: '3',
+                    title: "Hari Jadian",
+                    date: "2024-09-22",
+                    category: "spesial",
+                    content: "22 September 2024 - hari yang takkan pernah terlupakan. Hari dimana kita resmi menjadi pasangan dan memulai perjalanan cinta yang indah ini."
+                },
+                {
+                    id: '4',
+                    title: "Tawa Pertama Bersama",
+                    date: "2024-09-25",
+                    category: "lucu",
+                    content: "Saat kamu tertawa lepas karena leluconku yang konyol. Tawamu begitu indah dan membuatku jatuh cinta lebih dalam."
+                },
+                {
+                    id: '5',
+                    title: "Malam Romantis",
+                    date: "2024-10-14",
+                    category: "romantis",
+                    content: "Malam dimana kita berjalan di bawah bintang-bintang, membicarakan mimpi dan masa depan. Tanganmu yang hangat dalam genggamanku."
+                }
+            ];
+        }
+
+        function getDefaultPhotos() {
+            return [
+                { id: '1', title: "Foto Pertama Bersama", date: "2024-09-15", src: null },
+                { id: '2', title: "Kencan di Kafe", date: "2024-09-20", src: null },
+                { id: '3', title: "Hari Jadian", date: "2024-09-22", src: null },
+                { id: '4', title: "Liburan Pertama", date: "2024-10-05", src: null },
+                { id: '5', title: "Momen Romantis", date: "2024-10-14", src: null },
+                { id: '6', title: "Tawa Bahagia", date: "2024-09-25", src: null }
+            ];
+        }
+
+        // UI Functions
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Load section-specific content
+            if (sectionId === 'cerita') {
+                loadStories();
+            } else if (sectionId === 'timeline') {
+                loadTimeline();
+            } else if (sectionId === 'galeri') {
+                loadPhotos();
+            } else if (sectionId === 'statistik') {
+                updateStatistics();
+            }
+        }
+
+        function loadStories() {
+            const storyGrid = document.getElementById('storyGrid');
+            storyGrid.innerHTML = '';
+
+            let filteredStories = stories;
+            
+            // Filter by search
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm) {
+                filteredStories = filteredStories.filter(story => 
+                    story.title.toLowerCase().includes(searchTerm) ||
+                    story.content.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Filter by category
+            if (currentFilter !== 'semua') {
+                filteredStories = filteredStories.filter(story => story.category === currentFilter);
+            }
+
+            // Sort stories
+            if (currentSort === 'terbaru') {
+                filteredStories.sort((a, b) => new Date(b.date) - new Date(a.date));
+            } else if (currentSort === 'terlama') {
+                filteredStories.sort((a, b) => new Date(a.date) - new Date(b.date));
+            } else if (currentSort === 'judul') {
+                filteredStories.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (currentSort === 'terpanjang') {
+                filteredStories.sort((a, b) => b.content.length - a.content.length);
+            }
+
+            if (filteredStories.length === 0) {
+                storyGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <h3>Tidak ada cerita yang ditemukan 😢</h3>
+                        <p>Coba kata kunci lain atau tambah cerita baru!</p>
+                        <button class="btn btn-primary" onclick="openModal()">Tambah Cerita Pertama</button>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredStories.forEach((story, index) => {
+                const storyCard = document.createElement('div');
+                storyCard.className = 'story-card';
+                storyCard.style.animationDelay = `${index * 0.1}s`;
+                storyCard.setAttribute('data-category', story.category);
+                storyCard.innerHTML = `
+                    <div class="story-actions">
+                        <button class="action-btn edit-btn" onclick="editStory('${story.id}')" title="Edit">✏️</button>
+                        <button class="action-btn delete-btn" onclick="deleteStory('${story.id}')" title="Hapus">🗑️</button>
+                    </div>
+                    <div class="story-date">${formatDate(story.date)}</div>
+                    <div class="story-title">${story.title}</div>
+                    <div class="story-content">${story.content}</div>
+                    <div class="story-tags">
+                        <span class="tag">${getCategoryLabel(story.category)}</span>
+                    </div>
+                `;
+                storyGrid.appendChild(storyCard);
+            });
+        }
+
+        function loadTimeline() {
+            const timelineContent = document.getElementById('timelineContent');
+            timelineContent.innerHTML = '';
+
+            if (stories.length === 0) {
+                timelineContent.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Belum ada cerita untuk ditampilkan 📝</h3>
+                        <p>Mulai dokumentasikan perjalanan cinta kalian!</p>
+                        <button class="btn btn-primary" onclick="openModal()">Tambah Cerita Pertama</button>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort stories by date
+            const sortedStories = [...stories].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            sortedStories.forEach((story, index) => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                timelineItem.style.animationDelay = `${index * 0.2}s`;
+                timelineItem.innerHTML = `
+                    <div class="timeline-date">${formatDate(story.date)}</div>
+                    <div class="story-title">${story.title}</div>
+                    <div class="story-content">${story.content}</div>
+                `;
+                timelineContent.appendChild(timelineItem);
+            });
+        }
+
+        function loadPhotos() {
+            const photoGallery = document.getElementById('photoGallery');
+            photoGallery.innerHTML = '';
+
+            photos.forEach((photo, index) => {
+                const photoCard = document.createElement('div');
+                photoCard.className = 'photo-card';
+                photoCard.innerHTML = `
+                    <div class="photo-placeholder">
+                        ${photo.src ? 
+                            `<img src="${photo.src}" alt="${photo.title}" class="photo-preview">` :
+                            `<div style="text-align: center;">
+                                📸 ${photo.title}
+                                <br><small>Klik untuk upload foto</small>
+                                <input type="file" class="photo-upload-input" accept="image/*" onchange="uploadPhoto('${photo.id}', this)">
+                            </div>`
+                        }
+                    </div>
+                    <div class="photo-info">
+                        <div class="photo-title">${photo.title}</div>
+                        <div class="photo-date">${formatDate(photo.date)}</div>
+                    </div>
+                `;
+                photoGallery.appendChild(photoCard);
+            });
+        }
+
+        async function uploadPhoto(photoId, input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            try {
+                if (window.isFirebaseConnected && window.storage) {
+                    // Upload to Firebase Storage
+                    const storageRef = window.ref(window.storage, `photos/${photoId}_${Date.now()}`);
+                    const snapshot = await window.uploadBytes(storageRef, file);
+                    const downloadURL = await window.getDownloadURL(snapshot.ref);
+                    
+                    // Update photo in Firestore
+                    const photo = photos.find(p => p.id === photoId);
+                    if (photo) {
+                        photo.src = downloadURL;
+                        await window.updateDoc(window.doc(window.db, 'photos', photoId), { src: downloadURL });
+                        showNotification('Foto berhasil diupload ke Firebase! 📸', 'success');
+                    }
+                } else {
+                    // Fallback to local storage
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const photo = photos.find(p => p.id === photoId);
+                        if (photo) {
+                            photo.src = e.target.result;
+                            saveToLocal();
+                            loadPhotos();
+                            showNotification('Foto berhasil diupload! 📸', 'success');
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            } catch (error) {
+                console.error('Error uploading photo:', error);
+                showNotification('Error uploading photo', 'error');
+            }
+        }
+
+        function filterStories(category) {
+            currentFilter = category;
+            loadStories();
+            
+            // Update active button
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                if (btn.textContent.includes('Semua') || 
+                    btn.textContent.includes('Romantis') || 
+                    btn.textContent.includes('Lucu') || 
+                    btn.textContent.includes('Kencan') || 
+                    btn.textContent.includes('Spesial')) {
+                    btn.classList.remove('active');
+                }
+            });
+            event.target.classList.add('active');
+        }
+
+        function sortStories(sortType) {
+            currentSort = sortType;
+            loadStories();
+            
+            // Update active button for sort
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                if (btn.textContent.includes('Terbaru') || 
+                    btn.textContent.includes('Terlama') || 
+                    btn.textContent.includes('A-Z') ||
+                    btn.textContent.includes('Terpanjang')) {
+                    btn.classList.remove('active');
+                }
+            });
+            event.target.classList.add('active');
+        }
+
+        function editStory(storyId) {
+            const story = stories.find(s => s.id === storyId);
+            if (story) {
+                editingStoryId = storyId;
+                document.getElementById('modalTitle').textContent = 'Edit Cerita';
+                document.getElementById('submitBtn').textContent = 'Update';
+                document.getElementById('storyTitle').value = story.title;
+                document.getElementById('storyDate').value = story.date;
+                document.getElementById('storyCategory').value = story.category;
+                document.getElementById('storyContent').value = story.content;
+                openModal();
+            }
+        }
+
+        async function deleteStory(storyId) {
+            if (confirm('Apakah Anda yakin ingin menghapus cerita ini?')) {
+                try {
+                    if (window.isFirebaseConnected) {
+                        await deleteStoryFromFirebase(storyId);
+                    } else {
+                        stories = stories.filter(s => s.id !== storyId);
+                        saveToLocal();
+                    }
+                    
+                    loadStories();
+                    updateCounters();
+                    showNotification('Cerita berhasil dihapus! 🗑️', 'success');
+                } catch (error) {
+                    console.error('Error deleting story:', error);
+                    showNotification('Error deleting story', 'error');
+                }
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            return date.toLocaleDateString('id-ID', options);
+        }
+
+        function getCategoryLabel(category) {
+            const labels = {
+                'romantis': '💕 Romantis',
+                'lucu': '😄 Lucu',
+                'kencan': '🌹 Kencan',
+                'spesial': '⭐ Spesial'
+            };
+            return labels[category] || category;
+        }
+
+        function calculateDaysTogether() {
+            const today = new Date();
+            const diffTime = Math.abs(today - startDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        function updateStatistics() {
+            const days = calculateDaysTogether();
+            const weeks = Math.floor(days / 7);
+            const months = Math.floor(days / 30);
+            const romanticCount = stories.filter(story => story.category === 'romantis').length;
+            const funnyCount = stories.filter(story => story.category === 'lucu').length;
+            const dateCount = stories.filter(story => story.category === 'kencan').length;
+
+            document.getElementById('totalDays').textContent = days;
+            document.getElementById('totalWeeks').textContent = weeks;
+            document.getElementById('totalMonths').textContent = months;
+            document.getElementById('romanticStories').textContent = romanticCount;
+            document.getElementById('funnyStories').textContent = funnyCount;
+            document.getElementById('dateStories').textContent = dateCount;
+        }
+
+        function updateCounters() {
+            const days = calculateDaysTogether();
+            const months = Math.floor(days / 30);
+            document.getElementById('daysTogether').textContent = days;
+            document.getElementById('daysCounter').textContent = days;
+            document.getElementById('totalStories').textContent = stories.length;
+            document.getElementById('totalPhotos').textContent = photos.length;
+            document.getElementById('totalMonthsTogether').textContent = months;
+        }
+
+        function openModal() {
+            document.getElementById('addStoryModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('addStoryModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            document.getElementById('storyForm').reset();
+            editingStoryId = null;
+            document.getElementById('modalTitle').textContent = 'Tambah Cerita Baru';
+            document.getElementById('submitBtn').textContent = 'Simpan';
+        }
+
+        async function addNewStory(title, date, category, content) {
+            try {
+                if (editingStoryId) {
+                    // Update existing story
+                    const story = stories.find(s => s.id === editingStoryId);
+                    if (story) {
+                        story.title = title;
+                        story.date = date;
+                        story.category = category;
+                        story.content = content;
+                        
+                        if (window.isFirebaseConnected) {
+                            await updateStoryInFirebase(editingStoryId, story);
+                        } else {
+                            saveToLocal();
+                        }
+                        
+                        showNotification('Cerita berhasil diupdate! ✏️', 'success');
+                    }
+                } else {
+                    // Add new story
+                    const newStory = {
+                        title: title,
+                        date: date,
+                        category: category,
+                        content: content
+                    };
+                    
+                    if (window.isFirebaseConnected) {
+                        const docId = await saveStoryToFirebase(newStory);
+                        if (docId) {
+                            newStory.id = docId;
+                            stories.push(newStory);
+                        }
+                    } else {
+                        newStory.id = Date.now().toString();
+                        stories.push(newStory);
+                        saveToLocal();
+                    }
+                    
+                    showNotification('Cerita berhasil ditambahkan! 💕', 'success');
+                }
+                
+                loadStories();
+                updateCounters();
+            } catch (error) {
+                console.error('Error saving story:', error);
+                showNotification('Error saving story', 'error');
+            }
+        }
+
+        function exportStories() {
+            const dataStr = JSON.stringify({
+                stories: stories,
+                photos: photos.map(p => ({...p, src: null})), // Don't export photo data
+                startDate: startDate.toISOString().split('T')[0],
+                exportDate: new Date().toISOString()
+            }, null, 2);
+            
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `cerita_cinta_backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data berhasil diexport! 📤', 'success');
+        }
+
+        function importStories(file) {
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.stories && Array.isArray(data.stories)) {
+                        if (confirm('Import data akan mengganti semua cerita yang ada. Lanjutkan?')) {
+                            stories = data.stories;
+                            if (data.photos && Array.isArray(data.photos)) {
+                                // Merge photos, keeping existing uploaded images
+                                data.photos.forEach(importedPhoto => {
+                                    const existingPhoto = photos.find(p => p.id === importedPhoto.id);
+                                    if (existingPhoto) {
+                                        existingPhoto.title = importedPhoto.title;
+                                        existingPhoto.date = importedPhoto.date;
+                                        // Keep existing src if available
+                                    } else {
+                                        photos.push(importedPhoto);
+                                    }
+                                });
+                            }
+                            
+                            if (window.isFirebaseConnected) {
+                                // TODO: Implement Firebase import
+                                showNotification('Import ke Firebase belum tersedia, menggunakan local storage', 'error');
+                            }
+                            
+                            saveToLocal();
+                            loadStories();
+                            updateCounters();
+                            showNotification('Data berhasil diimport! 🎉', 'success');
+                        }
+                    } else {
+                        throw new Error('Format file tidak valid');
+                    }
+                } catch (error) {
+                    showNotification('Error: Format file tidak valid! ❌', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (confirm('Apakah Anda yakin ingin menghapus SEMUA data? Tindakan ini tidak dapat dibatalkan!')) {
+                if (confirm('Terakhir kali konfirmasi - SEMUA cerita dan foto akan hilang!')) {
+                    stories = [];
+                    photos = getDefaultPhotos();
+                    
+                    if (window.isFirebaseConnected) {
+                        // TODO: Implement Firebase clear
+                        showNotification('Clear Firebase belum tersedia, menggunakan local storage', 'error');
+                    }
+                    
+                    saveToLocal();
+                    loadStories();
+                    updateCounters();
+                    showNotification('Semua data berhasil dihapus! 🗑️', 'success');
+                }
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function createFloatingHearts() {
+            const heartsContainer = document.getElementById('floatingHearts');
+            
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '💕';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
+                heartsContainer.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, 8000);
+            }, 2000);
+        }
+
+        // Event Listeners
+        document.getElementById('storyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('storyTitle').value;
+            const date = document.getElementById('storyDate').value;
+            const category = document.getElementById('storyCategory').value;
+            const content = document.getElementById('storyContent').value;
+            
+            if (title && date && category && content) {
+                addNewStory(title, date, category, content);
+                closeModal();
+            }
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            loadStories();
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('addStoryModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                openModal();
+            }
+        });
+
+        // Make functions available globally
+        window.initializeApp = initializeApp;
+        window.showSection = showSection;
+        window.filterStories = filterStories;
+        window.sortStories = sortStories;
+        window.editStory = editStory;
+        window.deleteStory = deleteStory;
+        window.uploadPhoto = uploadPhoto;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.exportStories = exportStories;
+        window.importStories = importStories;
+        window.clearAllData = clearAllData;
+    </script>
+</body>
+</html>
+
